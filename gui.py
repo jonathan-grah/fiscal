@@ -102,6 +102,7 @@ class Window(QMainWindow):
         self.countryInfo = QDockWidget("Country Information", self)
         self.countryInfo.setFeatures(QDockWidget.DockWidgetClosable)
         self.countryInfo.setFixedWidth(300)
+        self.countryInfo.hide()
 
         self.addDockWidget(Qt.RightDockWidgetArea, self.countryInfo)
 
@@ -109,6 +110,8 @@ class Window(QMainWindow):
         self.showMaximized()
 
     def showCountryDock(self, country):
+        if (self.countryInfo.isHidden()):
+            self.countryInfo.show()
         self.countryInfo.setWidget(country)
 
 app = QApplication(sys.argv)
