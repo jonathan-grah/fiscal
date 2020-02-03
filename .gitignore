@@ -1,0 +1,8 @@
+# sqlite3 files
+db/files
+
+# config file
+config.ini
+
+#.vscode
+.vscode
