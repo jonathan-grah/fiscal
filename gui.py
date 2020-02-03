@@ -16,15 +16,8 @@ class Country(QGraphicsSvgItem):
 		self.setSharedRenderer(parent.renderer)
 		self.setElementId(self.country)
 
-	def mouseMoveEvent(self, event):
-		print("move")
-
-	def mouseReleaseEvent(self, event):
-		print("release")
-
 	def mousePressEvent(self, event):
-		print(self.country)
-		self.parent.findCountry(self.country)
+		# self.parent.findCountry(self.country)
 		self.ungrabMouse()
 
 class InteractiveMap(QGraphicsView):
@@ -67,9 +60,6 @@ class InteractiveMap(QGraphicsView):
 
 		self.scene.addItem(self.gb)
 		self.scene.addItem(self.ie)
-		self.scene.addItem(self.es)
-		self.scene.addItem(self.fr)
-		self.scene.addItem(self.ru)
 
 	def mousePressEvent(self, event):
 		self.initialMousePosition = event.pos()
