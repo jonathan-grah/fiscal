@@ -41,7 +41,7 @@ class InteractiveMap(QGraphicsView):
 	def displayMap(self):
 		self.scene = QGraphicsScene()
 
-		self.renderer = QSvgRenderer("map.svg")
+		self.renderer = QSvgRenderer("resources/map.svg")
 
 		self.ie = Country(self, "ie")
 		self.ie.setPos(1243.335, 223.772)
