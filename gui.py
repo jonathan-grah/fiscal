@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PySide2.QtWidgets import (QApplication, QGraphicsItem, QGraphicsScene, QGraphicsView, QScrollArea, QAbstractSlider, QMainWindow, QWidget, QLabel, QDockWidget)
+from PySide2.QtWidgets import (QApplication, QGraphicsItem, QGraphicsScene, QGraphicsPixmapItem, QGraphicsColorizeEffect, QGraphicsView, QScrollArea, QAbstractSlider, QMainWindow, QWidget, QLabel, QDockWidget)
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtSvg import *
@@ -14,11 +14,21 @@ class Country(QGraphicsSvgItem):
 		self.parent = parent
 
 		self.setSharedRenderer(parent.renderer)
+		self.setCacheMode(QGraphicsItem.ItemCoordinateCache)
+
 		self.setElementId(self.country)
+
+		self.setColour("grey")
 
 	def mousePressEvent(self, event):
 		# self.parent.findCountry(self.country)
+		print("mousePressEvent on", self.country)
 		self.ungrabMouse()
+
+	def setColour(self, colour):
+		effect = QGraphicsColorizeEffect()
+		effect.setColor(colour)
+		self.setGraphicsEffect(effect)
 
 class InteractiveMap(QGraphicsView):
 	def __init__(self, parent):
@@ -33,7 +43,6 @@ class InteractiveMap(QGraphicsView):
 
 		self.displayMap()
 		self.setScene(self.scene)
-		self.scale(2, 2)
 
 		# setup properties of class
 		self.isMouseMoving = False
@@ -41,25 +50,41 @@ class InteractiveMap(QGraphicsView):
 	def displayMap(self):
 		self.scene = QGraphicsScene()
 
+		# display image layer for detecting mouse presses
+
+		self.backgroundMapImg = QImage("resources/bg_map.png")
+
+		self.backgroundMap = QGraphicsPixmapItem(QPixmap.fromImage(self.backgroundMapImg))
+		self.scene.addItem(self.backgroundMap)
+
+		# display individual countries as SVG elements
+
 		self.renderer = QSvgRenderer("resources/map.svg")
 
 		self.ie = Country(self, "ie")
-		self.ie.setPos(1243.335, 223.772)
+		self.ie.setPos(1243.35, 223.87)
+		self.ie.setColour("green")
 
 		self.gb = Country(self, "gb")
-		self.gb.setPos(1260.61, 179.859)
+		self.gb.setPos(1260.61, 179.83)
+		self.gb.setColour("red")
 
 		self.es = Country(self, "es")
-		self.es.setPos(1169.683, 320.315)
+		self.es.setPos(1243.448, 320.3)
+		self.es.setColour("orange")
 
 		self.fr = Country(self, "fr")
-		self.fr.setPos(834.585, 258.535)
+		self.fr.setPos(1277.77, 258.72)
+		self.fr.setColour("blue")
 
 		self.ru = Country(self, "ru")
 		self.ru.setPos(1439.66, 32.788)
 
 		self.scene.addItem(self.gb)
 		self.scene.addItem(self.ie)
+		self.scene.addItem(self.fr)
+		self.scene.addItem(self.ru)
+		self.scene.addItem(self.es)
 
 	def mousePressEvent(self, event):
 		self.initialMousePosition = event.pos()
@@ -78,14 +103,19 @@ class InteractiveMap(QGraphicsView):
 		self.verticalScrollBar().setValue(self.initialSliderPosition["vertical"] + changeY)
 
 	def mouseReleaseEvent(self, event):
-		self.isMouseMoving = False
+		if (self.isMouseMoving):
+			self.isMouseMoving = False
+		else:
+			# check what country corresponds to colour
+
+			# colour = self.backgroundMapImg.pixel(self.initialMousePosition.x(), self.initialMousePosition.y())
+			# print(colour)
 
 	def scaleMap(self, zoom):
 		# zooming in and out of map
-		self.label.resize(
-			self.label.width() + zoom,
-			self.label.height() + zoom
-		)
+
+		zoom = zoom / 500 / 10
+		self.scale(1 + zoom, 1 + zoom)
 
 	def wheelEvent(self, event):
 		movement = event.angleDelta().y()
