@@ -12,8 +12,6 @@ class Country(QGraphicsSvgItem):
 	def __init__(self, parent, id, country):
 		super(Country, self).__init__()
 
-		print(country["colour"], id)
-
 		self.id = id
 		self.country = country
 		self.parent = parent
@@ -24,11 +22,18 @@ class Country(QGraphicsSvgItem):
 		self.setElementId(self.id)
 
 		self.setPos(self.country["position"]["x"], self.country["position"]["y"])
-		self.setColour(self.country["colour"])
+		
+		self.colour = QColor(qRgb(
+			self.country["colour"]["r"],
+			self.country["colour"]["g"],
+			self.country["colour"]["b"],
+		))
+
+		self.setColour("blue")
+
+		print("Country initialised:", self.country["name"])
 
 	def mousePressEvent(self, event):
-		# self.parent.findCountry(self.country)
-		print("mousePressEvent on", self.id)
 		self.ungrabMouse()
 
 	def setColour(self, colour):
@@ -53,6 +58,8 @@ class InteractiveMap(QGraphicsView):
 		# setup properties of class
 		self.isMouseMoving = False
 
+		self.scale(2, 2)
+
 	def displayMap(self):
 		self.scene = QGraphicsScene()
 
@@ -65,32 +72,15 @@ class InteractiveMap(QGraphicsView):
 
 		# display individual countries as SVG elements
 
-		self.renderer = QSvgRenderer("resources/map.svg")
+		self.renderer = QSvgRenderer("resources/uncoloured_map.svg")
 
 		self.countries = {}
 		with open("countries.json") as file:
-			countries = json.load(file)
+			countries = json.load(file) # need to add error checking
 			
 			for country in countries:
 				self.countries[country] = Country(self, country, countries[country])
 				self.scene.addItem(self.countries[country])
-
-		# self.es = Country(self, "es")
-		# self.es.setPos(1243.448, 320.3)
-		# self.es.setColour("orange")
-
-		# self.fr = Country(self, "fr")
-		# self.fr.setPos(1277.77, 258.72)
-		# self.fr.setColour("blue")
-
-		# self.ru = Country(self, "ru")
-		# self.ru.setPos(1439.66, 32.788)
-
-		# self.scene.addItem(self.gb)
-		# self.scene.addItem(self.ie)
-		# self.scene.addItem(self.fr)
-		# self.scene.addItem(self.ru)
-		# self.scene.addItem(self.es)
 
 	def mousePressEvent(self, event):
 		self.initialMousePosition = event.pos()
@@ -113,10 +103,16 @@ class InteractiveMap(QGraphicsView):
 			self.isMouseMoving = False
 		else:
 			# check what country corresponds to colour
-			print("Normal click")
 
-			# colour = self.backgroundMapImg.pixel(self.initialMousePosition.x(), self.initialMousePosition.y())
-			# print(colour)
+			pixelColour = self.backgroundMapImg.pixelColor((
+				event.pos() +
+				QPoint(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
+			) / 2)
+
+			# linear search ???
+			for country in self.countries:
+				if self.countries[country].colour == pixelColour:
+					self.findCountry(country)
 
 	def scaleMap(self, zoom):
 		# zooming in and out of map
@@ -132,15 +128,13 @@ class InteractiveMap(QGraphicsView):
 		elif (movement == -120):
 			self.scaleMap(-500)
 
-	def findCountry(self, country):
+	def findCountry(self, country):		
 		text = QLabel()
-		if (True):
-			text.setText(country)
-		else:
-			text.setText("Not found")
-			text.setAlignment(Qt.AlignCenter)
+		text.setText(country)
 
 		self.parent().showCountryDock(text)
+		
+		print("Country clicked:", country)
 
 class Window(QMainWindow):
 	def __init__(self):

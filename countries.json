@@ -1,18 +1,26 @@
 {
 	"gb": {
-		"countryName": "United Kingdom",
+		"name": "United Kingdom",
 		"position": {
-			"x": 1260.61,
-			"y": 179.83
+			"x": 1231.995,
+			"y": 156.401
 		},
-		"colour": "blue"
+		"colour": {
+			"r": 0,
+			"g": 0,
+			"b": 0
+		}
 	},
 	"ie": {
-		"countryName": "Ireland",
+		"name": "Ireland",
 		"position": {
-			"x": 1243.35,
-			"y": 223.87
+			"x": 1214.741,
+			"y": 200.437
 		},
-		"colour": "green"
+		"colour": {
+			"r": 131,
+			"g": 178,
+			"b": 98
+		}
 	}
 }
