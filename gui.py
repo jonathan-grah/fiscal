@@ -3,7 +3,7 @@
 import sys
 import json
 
-from PySide2.QtWidgets import (QApplication, QGraphicsItem, QGraphicsScene, QGraphicsPixmapItem, QGraphicsColorizeEffect, QGraphicsView, QScrollArea, QAbstractSlider, QMainWindow, QWidget, QLabel, QDockWidget)
+from PySide2.QtWidgets import (QApplication, QStyle, QGraphicsItem, QGraphicsScene, QGraphicsPixmapItem, QGraphicsColorizeEffect, QGraphicsView, QScrollArea, QAbstractSlider, QMainWindow, QWidget, QLabel, QDockWidget)
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtSvg import *
@@ -13,25 +13,62 @@ class Country(QGraphicsSvgItem):
 		super(Country, self).__init__()
 
 		self.id = id
+
 		self.country = country
+
+		self.name = country["name"]
+		
 		self.parent = parent
 
-		self.setSharedRenderer(parent.renderer)
+		self.setSharedRenderer(self.parent.renderer)
 		self.setCacheMode(QGraphicsItem.ItemCoordinateCache)
 
 		self.setElementId(self.id)
 
 		self.setPos(self.country["position"]["x"], self.country["position"]["y"])
-		
-		self.colour = QColor(qRgb(
+
+		# set colour of country
+		self.colour = QColor()
+		self.colour.setRgb(
 			self.country["colour"]["r"],
 			self.country["colour"]["g"],
-			self.country["colour"]["b"],
-		))
+			self.country["colour"]["b"]
+		)
 
-		self.setColour("blue")
+		self.setColour(self.colour)
 
-		print("Country initialised:", self.country["name"])
+		qDebug("Country initialised: " + self.country["name"])
+
+	def paint(self, painter, option, widget):
+		print(self.elementId())
+
+		# partially reimplementing the function
+		# https://code.woboq.org/qt5/qtsvg/src/svg/qgraphicssvgitem.cpp.html#_ZN16QGraphicsSvgItem5paintEP8QPainterPK24QStyleOptionGraphicsItemP7QWidget
+
+		rect = self.boundingRect()
+		# rect.setSize(QSizeF(rect.width() * self.parent.currentScale, rect.height() * self.parent.currentScale))
+
+		if not(self.parent.renderer.isValid()):
+			return
+		if not(self.elementId()):
+			self.parent.renderer.render(painter, rect)
+		else:
+			self.parent.renderer.render(painter, self.elementId(), rect)
+		
+		metrics = QFontMetrics(painter.font())
+		x = rect.width() * 1.0 / metrics.width(self.name) - 0.4
+		y = rect.height() * 1.0 / metrics.height() - 0.4
+
+		painter.save()
+		painter.translate(rect.center())
+		painter.scale(min(x, y), min(x, y))
+		painter.translate(-rect.center())
+
+		# painter.setPen(Qt.red)
+		# probale should change colour of text
+		painter.drawText(rect, self.name, Qt.AlignHCenter | Qt.AlignVCenter)
+
+		painter.restore()
 
 	def mousePressEvent(self, event):
 		self.ungrabMouse()
@@ -39,6 +76,7 @@ class Country(QGraphicsSvgItem):
 	def setColour(self, colour):
 		effect = QGraphicsColorizeEffect()
 		effect.setColor(colour)
+
 		self.setGraphicsEffect(effect)
 
 class InteractiveMap(QGraphicsView):
@@ -58,7 +96,7 @@ class InteractiveMap(QGraphicsView):
 		# setup properties of class
 		self.isMouseMoving = False
 
-		self.scale(2, 2)
+		self.currentScale = 1
 
 	def displayMap(self):
 		self.scene = QGraphicsScene()
@@ -66,8 +104,10 @@ class InteractiveMap(QGraphicsView):
 		# display image layer for detecting mouse presses
 
 		self.backgroundMapImg = QImage("resources/bg_map.png")
+		self.backgroundMapImg
 
 		self.backgroundMap = QGraphicsPixmapItem(QPixmap.fromImage(self.backgroundMapImg))
+		# self.backgroundMap.hide()
 		self.scene.addItem(self.backgroundMap)
 
 		# display individual countries as SVG elements
@@ -107,26 +147,30 @@ class InteractiveMap(QGraphicsView):
 			pixelColour = self.backgroundMapImg.pixelColor((
 				event.pos() +
 				QPoint(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-			) / 2)
+			) / self.currentScale)
 
 			# linear search ???
 			for country in self.countries:
 				if self.countries[country].colour == pixelColour:
-					self.findCountry(country)
+					return self.findCountry(self.countries[country].name)
 
-	def scaleMap(self, zoom):
-		# zooming in and out of map
+			self.parent().countryInfo.hide()
 
-		zoom = zoom / 500 / 10
-		self.scale(1 + zoom, 1 + zoom)
+	# def scaleMap(self, zoom):
+	# 	# zooming in and out of map
+	# 	qDebug(self.currentScale)
+	# 	self.currentScale = 1 + zoom
+	# 	qDebug(self.currentScale)
 
-	def wheelEvent(self, event):
-		movement = event.angleDelta().y()
+	# 	self.scale(self.currentScale, self.currentScale)
 
-		if (movement == 120):
-			self.scaleMap(500)
-		elif (movement == -120):
-			self.scaleMap(-500)
+	# def wheelEvent(self, event):
+	# 	movement = event.angleDelta().y()
+
+	# 	if (movement == 120):
+	# 		self.scaleMap(0.1)
+	# 	elif (movement == -120):
+	# 		self.scaleMap(-0.2)
 
 	def findCountry(self, country):		
 		text = QLabel()
@@ -134,7 +178,7 @@ class InteractiveMap(QGraphicsView):
 
 		self.parent().showCountryDock(text)
 		
-		print("Country clicked:", country)
+		qDebug("Country clicked: " + country)
 
 class Window(QMainWindow):
 	def __init__(self):
