@@ -40,6 +40,12 @@ class Country(QGraphicsSvgItem):
 
 		qDebug("Country initialised: " + self.country["name"])
 
+	def selectCountry(self):
+		self.setColour("gray")
+
+	def deselectCountry(self):
+		self.setColour(self.colour)
+
 	def paint(self, painter, option, widget):
 		print(self.elementId())
 
@@ -80,6 +86,7 @@ class Country(QGraphicsSvgItem):
 
 		self.setGraphicsEffect(effect)
 
+
 class InteractiveMap(QGraphicsView):
 	def __init__(self, parent):
 		super(InteractiveMap, self).__init__()
@@ -102,6 +109,7 @@ class InteractiveMap(QGraphicsView):
 		self.initialMousePosition = QPoint()
 		self.isMouseMoving = False
 		self.currentScale = 1
+		self.currentlySelected = ""
 
 	def displayMap(self):
 		self.scene = QGraphicsScene()
@@ -112,7 +120,7 @@ class InteractiveMap(QGraphicsView):
 		self.backgroundMapImg.load("resources/bg_map.png", "png")
 
 		self.backgroundMap = QGraphicsPixmapItem(QPixmap.fromImage(self.backgroundMapImg))
-		# self.backgroundMap.hide()
+		self.backgroundMap.hide()
 		self.scene.addItem(self.backgroundMap)
 
 		# display individual countries as SVG elements
@@ -155,14 +163,22 @@ class InteractiveMap(QGraphicsView):
 		else:
 			# check what country corresponds to colour
 			if event.button() == Qt.LeftButton:
+				# get the colour of the pixel on the background map image that is currently selected by the pointer
 				pixelColour = self.backgroundMapImg.pixelColor((
 					event.pos() +
 					QPoint(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
 				) / self.currentScale)
 
+				# if a country is already selected, deselect it
+				if self.currentlySelected:
+					self.countries[self.currentlySelected].deselectCountry()
+
 				# linear search ???
 				for country in self.countries:
 					if self.countries[country].colour == pixelColour:
+						self.countries[country].selectCountry()
+						self.currentlySelected = country
+
 						return self.findCountry(self.countries[country].name)
 
 				self.parent().countryInfo.hide()
