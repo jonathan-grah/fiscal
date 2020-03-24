@@ -101,7 +101,6 @@ class InteractiveMap(QGraphicsView):
 		}
 		self.initialMousePosition = QPoint()
 		self.isMouseMoving = False
-
 		self.currentScale = 1
 
 	def displayMap(self):
@@ -130,12 +129,18 @@ class InteractiveMap(QGraphicsView):
 				self.scene.addItem(self.countries[country])
 
 	def mousePressEvent(self, event):
+		if not(event.buttons() == Qt.RightButton or event.buttons() == Qt.MiddleButton):
+			return event.ignore()
+
 		self.initialMousePosition = event.pos()
 
 		self.initialSliderPosition["horizontal"] = self.horizontalScrollBar().value()
 		self.initialSliderPosition["vertical"] = self.verticalScrollBar().value()
 
 	def mouseMoveEvent(self, event):
+		if not(event.buttons() == Qt.RightButton or event.buttons() == Qt.MiddleButton):
+			return event.ignore()
+
 		self.isMouseMoving = True
 
 		changeX = self.initialMousePosition.x() - event.x()
@@ -145,22 +150,22 @@ class InteractiveMap(QGraphicsView):
 		self.verticalScrollBar().setValue(self.initialSliderPosition["vertical"] + changeY)
 
 	def mouseReleaseEvent(self, event):
-		if (self.isMouseMoving):
+		if self.isMouseMoving:
 			self.isMouseMoving = False
 		else:
 			# check what country corresponds to colour
+			if event.button() == Qt.LeftButton:
+				pixelColour = self.backgroundMapImg.pixelColor((
+					event.pos() +
+					QPoint(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
+				) / self.currentScale)
 
-			pixelColour = self.backgroundMapImg.pixelColor((
-				event.pos() +
-				QPoint(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-			) / self.currentScale)
+				# linear search ???
+				for country in self.countries:
+					if self.countries[country].colour == pixelColour:
+						return self.findCountry(self.countries[country].name)
 
-			# linear search ???
-			for country in self.countries:
-				if self.countries[country].colour == pixelColour:
-					return self.findCountry(self.countries[country].name)
-
-			self.parent().countryInfo.hide()
+				self.parent().countryInfo.hide()
 
 	# def scaleMap(self, zoom):
 	# 	# zooming in and out of map
