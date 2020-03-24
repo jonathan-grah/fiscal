@@ -8,6 +8,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtSvg import *
 
+
 class Country(QGraphicsSvgItem):
 	def __init__(self, parent, id, country):
 		super(Country, self).__init__()
@@ -94,6 +95,11 @@ class InteractiveMap(QGraphicsView):
 		self.setScene(self.scene)
 
 		# setup properties of class
+		self.initialSliderPosition = {
+			"horizontal": 0,
+			"vertical": 0
+		}
+		self.initialMousePosition = QPoint()
 		self.isMouseMoving = False
 
 		self.currentScale = 1
@@ -103,8 +109,8 @@ class InteractiveMap(QGraphicsView):
 
 		# display image layer for detecting mouse presses
 
-		self.backgroundMapImg = QImage("resources/bg_map.png")
-		self.backgroundMapImg
+		self.backgroundMapImg = QImage()
+		self.backgroundMapImg.load("resources/bg_map.png", "png")
 
 		self.backgroundMap = QGraphicsPixmapItem(QPixmap.fromImage(self.backgroundMapImg))
 		# self.backgroundMap.hide()
@@ -112,7 +118,8 @@ class InteractiveMap(QGraphicsView):
 
 		# display individual countries as SVG elements
 
-		self.renderer = QSvgRenderer("resources/uncoloured_map.svg")
+		self.renderer = QSvgRenderer()
+		self.renderer.load("resources/uncoloured_map.svg")
 
 		self.countries = {}
 		with open("countries.json") as file:
@@ -124,10 +131,9 @@ class InteractiveMap(QGraphicsView):
 
 	def mousePressEvent(self, event):
 		self.initialMousePosition = event.pos()
-		self.initialSliderPosition = {
-			"horizontal": self.horizontalScrollBar().value(),
-			"vertical": self.verticalScrollBar().value()
-		}
+
+		self.initialSliderPosition["horizontal"] = self.horizontalScrollBar().value()
+		self.initialSliderPosition["vertical"] = self.verticalScrollBar().value()
 
 	def mouseMoveEvent(self, event):
 		self.isMouseMoving = True
@@ -180,6 +186,7 @@ class InteractiveMap(QGraphicsView):
 		
 		qDebug("Country clicked: " + country)
 
+
 class Window(QMainWindow):
 	def __init__(self):
 		super(Window, self).__init__()
@@ -198,9 +205,10 @@ class Window(QMainWindow):
 		self.showMaximized()
 
 	def showCountryDock(self, country):
-		if (self.countryInfo.isHidden()):
+		if self.countryInfo.isHidden():
 			self.countryInfo.show()
 		self.countryInfo.setWidget(country)
+
 
 app = QApplication(sys.argv)
 gui = Window()
