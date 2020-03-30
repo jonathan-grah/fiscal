@@ -82,6 +82,10 @@ class InteractiveMap(QGraphicsView):
 		self.scale(self.currentScale, self.currentScale)
 
 	def displayMap(self):
+		# set the background behind countries to be blue (representing the sea)
+		seaColouredBrush = QBrush(QColor("lightskyblue"))
+		self.setBackgroundBrush(seaColouredBrush)
+
 		self.scene = QGraphicsScene()
 
 		# display image layer for detecting mouse presses
