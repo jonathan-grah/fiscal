@@ -22,7 +22,7 @@ class Country(QGraphicsSvgItem):
 		self.parent = parent
 
 		self.setSharedRenderer(self.parent.renderer)
-		self.setCacheMode(QGraphicsItem.ItemCoordinateCache)
+		self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
 		self.setElementId(self.id)
 
@@ -36,70 +36,28 @@ class Country(QGraphicsSvgItem):
 			self.country["colour"]["b"]
 		)
 
-		self.setColour(self.colour)
-
 		qDebug("Country initialised: " + self.country["name"])
 
+		# country will appear green when selected
+		self.selectedEffect = QGraphicsColorizeEffect()
+		self.selectedEffect.setColor("green")
+		self.setGraphicsEffect(self.selectedEffect)
+
+		# country is not selected by default
+		self.deselectCountry()
+
 	def selectCountry(self):
-		self.setColour("gray")
+		self.selectedEffect.setEnabled(True)
 
 	def deselectCountry(self):
-		self.setColour(self.colour)
-
-	def paint(self, painter, option, widget):
-		print(self.elementId())
-
-		# partially reimplementing the function
-		# https://code.woboq.org/qt5/qtsvg/src/svg/qgraphicssvgitem.cpp.html#_ZN16QGraphicsSvgItem5paintEP8QPainterPK24QStyleOptionGraphicsItemP7QWidget
-
-		rect = self.boundingRect()
-		# rect.setSize(QSizeF(rect.width() * self.parent.currentScale, rect.height() * self.parent.currentScale))
-
-		if not(self.parent.renderer.isValid()):
-			return
-		if not(self.elementId()):
-			self.parent.renderer.render(painter, rect)
-		else:
-			self.parent.renderer.render(painter, self.elementId(), rect)
-		
-		metrics = QFontMetrics(painter.font())
-		x = rect.width() * 1.0 / metrics.width(self.name) - 0.4
-		y = rect.height() * 1.0 / metrics.height() - 0.4
-
-		painter.save()
-		painter.translate(rect.center())
-		painter.scale(min(x, y), min(x, y))
-		painter.translate(-rect.center())
-
-		# painter.setPen(Qt.red)
-		# probale should change colour of text
-		painter.drawText(rect, self.name, Qt.AlignHCenter | Qt.AlignVCenter)
-
-		painter.restore()
+		self.selectedEffect.setEnabled(False)
 
 	def mousePressEvent(self, event):
 		self.ungrabMouse()
 
-	def setColour(self, colour):
-		effect = QGraphicsColorizeEffect()
-		effect.setColor(colour)
-
-		self.setGraphicsEffect(effect)
-
-
 class InteractiveMap(QGraphicsView):
 	def __init__(self, parent):
 		super(InteractiveMap, self).__init__()
-		
-		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-		# prevents unintended scrolling with middle mouse button
-		self.horizontalScrollBar().setEnabled(False)
-		self.verticalScrollBar().setEnabled(False)
-
-		self.displayMap()
-		self.setScene(self.scene)
 
 		# setup properties of class
 		self.initialSliderPosition = {
@@ -110,6 +68,18 @@ class InteractiveMap(QGraphicsView):
 		self.isMouseMoving = False
 		self.currentScale = 1
 		self.currentlySelected = ""
+
+		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+		# prevents unintended scrolling with middle mouse button
+		self.horizontalScrollBar().setEnabled(False)
+		self.verticalScrollBar().setEnabled(False)
+
+		self.displayMap()
+		self.setScene(self.scene)
+
+		self.scale(self.currentScale, self.currentScale)
 
 	def displayMap(self):
 		self.scene = QGraphicsScene()
@@ -126,7 +96,7 @@ class InteractiveMap(QGraphicsView):
 		# display individual countries as SVG elements
 
 		self.renderer = QSvgRenderer()
-		self.renderer.load("resources/uncoloured_map.svg")
+		self.renderer.load("resources/coloured_map.svg")
 
 		self.countries = {}
 		with open("countries.json") as file:
@@ -183,21 +153,25 @@ class InteractiveMap(QGraphicsView):
 
 				self.parent().countryInfo.hide()
 
-	# def scaleMap(self, zoom):
-	# 	# zooming in and out of map
-	# 	qDebug(self.currentScale)
-	# 	self.currentScale = 1 + zoom
-	# 	qDebug(self.currentScale)
+	def scaleMap(self, movement):
+		# zooming in and out of map
 
-	# 	self.scale(self.currentScale, self.currentScale)
+		if movement == "in":
+			self.scale(1.25, 1.25)
+		elif movement == "out":
+			self.scale(0.75, 0.75)
 
-	# def wheelEvent(self, event):
-	# 	movement = event.angleDelta().y()
+		# self.transform.m11() refers to the horizontal scale factor
+		# this is updated in order to ensure that mouse presses on countries are still detected when scale is changed
+		self.currentScale = self.transform().m11()
 
-	# 	if (movement == 120):
-	# 		self.scaleMap(0.1)
-	# 	elif (movement == -120):
-	# 		self.scaleMap(-0.2)
+	def wheelEvent(self, event):
+		movement = event.angleDelta().y()
+
+		if movement == 120:
+			self.scaleMap("in")
+		elif movement == -120:
+			self.scaleMap("out")
 
 	def findCountry(self, country):		
 		text = QLabel()
@@ -223,7 +197,6 @@ class Window(QMainWindow):
 		self.addDockWidget(Qt.RightDockWidgetArea, self.countryInfo)
 
 		self.setWindowTitle("Project Fiscal")
-		self.showMaximized()
 
 	def showCountryDock(self, country):
 		if self.countryInfo.isHidden():
