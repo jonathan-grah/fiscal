@@ -62,8 +62,8 @@
 	"path3804": {
 		"name": "United States",
 		"position": {
-			"x": 558.621,
-			"y": 346.895
+			"x": 1212.414,
+			"y": 751.731
 		},
 		"colour": {
 			"r": 60,
@@ -261,6 +261,66 @@
 			"r": 201,
 			"g": 201,
 			"b": 201
+		}
+	},
+	"cn": {
+		"name": "China",
+		"position": {
+			"x": 5423,
+			"y": 647.389
+		},
+		"colour": {
+			"r": 224,
+			"g": 61,
+			"b": 61
+		}
+	},
+	"in": {
+		"name": "India",
+		"position": {
+			"x": 5375.205,
+			"y": 1111.758
+		},
+		"colour": {
+			"r": 234,
+			"g": 163,
+			"b": 87
+		}
+	},
+	"mx": {
+		"name": "Mexico",
+		"position": {
+			"x": 1218.192,
+			"y": 1182.6
+		},
+		"colour": {
+			"r": 51,
+			"g": 107,
+			"b": 41
+		}
+	},
+	"au": {
+		"name": "Australia",
+		"position": {
+			"x": 6355.018,
+			"y": 2316.666
+		},
+		"colour": {
+			"r": 56,
+			"g": 66,
+			"b": 244
+		}
+	},
+	"cd": {
+		"name": "Democratic Republic of the Congo",
+		"position": {
+			"x": 4117.9,
+			"y": 1896.955
+		},
+		"colour": {
+			"r": 46,
+			"g": 151,
+			"b": 237
 		}
 	}
 }

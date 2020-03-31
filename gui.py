@@ -55,6 +55,7 @@ class Country(QGraphicsSvgItem):
 	def mousePressEvent(self, event):
 		self.ungrabMouse()
 
+
 class InteractiveMap(QGraphicsView):
 	def __init__(self, parent):
 		super(InteractiveMap, self).__init__()
@@ -66,7 +67,7 @@ class InteractiveMap(QGraphicsView):
 		}
 		self.initialMousePosition = QPoint()
 		self.isMouseMoving = False
-		self.currentScale = 1
+		self.currentScale = 1.25
 		self.currentlySelected = ""
 
 		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -80,6 +81,10 @@ class InteractiveMap(QGraphicsView):
 		self.setScene(self.scene)
 
 		self.scale(self.currentScale, self.currentScale)
+
+		# scroll area of map is centered around Europe
+		self.horizontalScrollBar().setValue(4500)
+		self.verticalScrollBar().setValue(500)
 
 	def displayMap(self):
 		# set the background behind countries to be blue (representing the sea)
