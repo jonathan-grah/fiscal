@@ -9,6 +9,11 @@
 			"r": 191,
 			"g": 82,
 			"b": 82
+		},
+		"iso": "GBR",
+		"datasetIdentifiers": {
+			"knoemaKey": 1001840,
+			"knoemaRegionId": "GB"
 		}
 	},
 	"ie": {
@@ -21,6 +26,11 @@
 			"r": 131,
 			"g": 178,
 			"b": 98
+		},
+		"iso": "IRL",
+		"datasetIdentifiers": {
+			"knoemaKey": 1000770,
+			"knoemaRegionId": "IE"
 		}
 	},
 	"fr": {
@@ -33,6 +43,11 @@
 			"r": 75,
 			"g": 143,
 			"b": 204
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"es": {
@@ -45,6 +60,11 @@
 			"r": 241,
 			"g": 191,
 			"b": 0
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"path3446": {
@@ -57,6 +77,11 @@
 			"r": 0,
 			"g": 104,
 			"b": 71
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"path3804": {
@@ -69,6 +94,11 @@
 			"r": 60,
 			"g": 59,
 			"b": 110
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"de": {
@@ -81,6 +111,11 @@
 			"r": 33,
 			"g": 31,
 			"b": 31
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"it": {
@@ -93,6 +128,11 @@
 			"r": 58,
 			"g": 79,
 			"b": 61
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"pl": {
@@ -105,6 +145,11 @@
 			"r": 232,
 			"g": 151,
 			"b": 220
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"ua": {
@@ -117,6 +162,11 @@
 			"r": 79,
 			"g": 100,
 			"b": 153
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"tr": {
@@ -129,6 +179,11 @@
 			"r": 163,
 			"g": 159,
 			"b": 134
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"ro": {
@@ -141,6 +196,11 @@
 			"r": 196,
 			"g": 186,
 			"b": 144
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"no": {
@@ -153,6 +213,11 @@
 			"r": 107,
 			"g": 50,
 			"b": 50
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"se": {
@@ -165,6 +230,11 @@
 			"r": 55,
 			"g": 96,
 			"b": 188
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"fi": {
@@ -177,6 +247,11 @@
 			"r": 249,
 			"g": 247,
 			"b": 247
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"ru": {
@@ -189,6 +264,11 @@
 			"r": 102,
 			"g": 135,
 			"b": 102
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"gr": {
@@ -201,6 +281,11 @@
 			"r": 102,
 			"g": 194,
 			"b": 204
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"al": {
@@ -213,6 +298,11 @@
 			"r": 183,
 			"g": 65,
 			"b": 65
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"by": {
@@ -225,6 +315,11 @@
 			"r": 144,
 			"g": 175,
 			"b": 158
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"cz": {
@@ -237,6 +332,11 @@
 			"r": 96,
 			"g": 62,
 			"b": 104
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"sk": {
@@ -249,6 +349,11 @@
 			"r": 244,
 			"g": 147,
 			"b": 137
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"at": {
@@ -261,6 +366,11 @@
 			"r": 201,
 			"g": 201,
 			"b": 201
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"cn": {
@@ -273,6 +383,11 @@
 			"r": 224,
 			"g": 61,
 			"b": 61
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"in": {
@@ -285,6 +400,11 @@
 			"r": 234,
 			"g": 163,
 			"b": 87
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"mx": {
@@ -297,6 +417,11 @@
 			"r": 51,
 			"g": 107,
 			"b": 41
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"au": {
@@ -309,6 +434,11 @@
 			"r": 56,
 			"g": 66,
 			"b": 244
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	},
 	"cd": {
@@ -321,6 +451,11 @@
 			"r": 46,
 			"g": 151,
 			"b": 237
+		},
+		"iso": "",
+		"datasetIdentifiers": {
+			"knoemaKey": "",
+			"knoemaRegionId": ""
 		}
 	}
 }

@@ -3,214 +3,243 @@
 import sys
 import json
 
-from PySide2.QtWidgets import (QApplication, QStyle, QGraphicsItem, QGraphicsScene, QGraphicsPixmapItem, QGraphicsColorizeEffect, QGraphicsView, QScrollArea, QAbstractSlider, QMainWindow, QWidget, QLabel, QDockWidget)
+from PySide2.QtWidgets import (QApplication, QGraphicsItem, QGraphicsScene, QGraphicsPixmapItem,
+                               QGraphicsColorizeEffect, QGraphicsView,
+                               QMainWindow, QLabel, QDockWidget)
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtSvg import *
 
+import db.countries, db.indicators
+
 
 class Country(QGraphicsSvgItem):
-	def __init__(self, parent, id, country):
-		super(Country, self).__init__()
+    def __init__(self, parent, id, country):
+        super(Country, self).__init__()
 
-		self.id = id
+        self.id = id
 
-		self.country = country
+        self.country = country
 
-		self.name = country["name"]
-		
-		self.parent = parent
+        self.name = country["name"]
 
-		self.setSharedRenderer(self.parent.renderer)
-		self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+        self.parent = parent
 
-		self.setElementId(self.id)
+        self.setSharedRenderer(self.parent.renderer)
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
-		self.setPos(self.country["position"]["x"], self.country["position"]["y"])
+        self.setElementId(self.id)
 
-		# set colour of country
-		self.colour = QColor()
-		self.colour.setRgb(
-			self.country["colour"]["r"],
-			self.country["colour"]["g"],
-			self.country["colour"]["b"]
-		)
+        self.setPos(self.country["position"]["x"], self.country["position"]["y"])
 
-		qDebug("Country initialised: " + self.country["name"])
+        # set colour of country
+        self.colour = QColor()
+        self.colour.setRgb(
+            self.country["colour"]["r"],
+            self.country["colour"]["g"],
+            self.country["colour"]["b"]
+        )
 
-		# country will appear green when selected
-		self.selectedEffect = QGraphicsColorizeEffect()
-		self.selectedEffect.setColor("green")
-		self.setGraphicsEffect(self.selectedEffect)
+        qDebug("Country initialised: " + self.country["name"])
 
-		# country is not selected by default
-		self.deselectCountry()
+        # country will appear green when selected
+        self.selectedEffect = QGraphicsColorizeEffect()
+        self.selectedEffect.setColor("green")
+        self.setGraphicsEffect(self.selectedEffect)
 
-	def selectCountry(self):
-		self.selectedEffect.setEnabled(True)
+        # country is not selected by default
+        self.deselectCountry()
 
-	def deselectCountry(self):
-		self.selectedEffect.setEnabled(False)
+    def selectCountry(self):
+        self.selectedEffect.setEnabled(True)
 
-	def mousePressEvent(self, event):
-		self.ungrabMouse()
+    def deselectCountry(self):
+        self.selectedEffect.setEnabled(False)
+
+    def mousePressEvent(self, event):
+        self.ungrabMouse()
+
+
+class MajorCountry(Country):
+    def __init__(self, parent):
+        super(MajorCountry, self).__init__()
 
 
 class InteractiveMap(QGraphicsView):
-	def __init__(self, parent):
-		super(InteractiveMap, self).__init__()
+    def __init__(self, parent):
+        super(InteractiveMap, self).__init__()
 
-		# setup properties of class
-		self.initialSliderPosition = {
-			"horizontal": 0,
-			"vertical": 0
-		}
-		self.initialMousePosition = QPoint()
-		self.isMouseMoving = False
-		self.currentScale = 1.25
-		self.currentlySelected = ""
+        # setup properties of class
+        self.countries = {}
+        self.scene = QGraphicsScene()
+        self.backgroundMapImg = QImage()
+        self.renderer = QSvgRenderer()
+        self.initialSliderPosition = {
+            "horizontal": 0,
+            "vertical": 0
+        }
+        self.initialMousePosition = QPoint()
+        self.isMouseMoving = False
+        self.currentScale = 1.25
+        self.currentlySelected = ""
 
-		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-		# prevents unintended scrolling with middle mouse button
-		self.horizontalScrollBar().setEnabled(False)
-		self.verticalScrollBar().setEnabled(False)
+        # prevents unintended scrolling with middle mouse button
+        self.horizontalScrollBar().setEnabled(False)
+        self.verticalScrollBar().setEnabled(False)
 
-		self.displayMap()
-		self.setScene(self.scene)
+        self.displayMap()
+        self.setScene(self.scene)
 
-		self.scale(self.currentScale, self.currentScale)
+        self.scale(self.currentScale, self.currentScale)
 
-		# scroll area of map is centered around Europe
-		self.horizontalScrollBar().setValue(4500)
-		self.verticalScrollBar().setValue(500)
+        # scroll area of map is centered around Europe
+        self.horizontalScrollBar().setValue(4500)
+        self.verticalScrollBar().setValue(500)
 
-	def displayMap(self):
-		# set the background behind countries to be blue (representing the sea)
-		seaColouredBrush = QBrush(QColor("lightskyblue"))
-		self.setBackgroundBrush(seaColouredBrush)
+    def displayMap(self):
+        # TODO: modulate the gui.py file more
 
-		self.scene = QGraphicsScene()
+        # set the background behind countries to be blue (representing the sea)
+        seaColouredBrush = QBrush(QColor("lightskyblue"))
+        self.setBackgroundBrush(seaColouredBrush)
 
-		# display image layer for detecting mouse presses
+        # display image layer for detecting mouse presses
 
-		self.backgroundMapImg = QImage()
-		self.backgroundMapImg.load("resources/bg_map.png", "png")
+        self.backgroundMapImg.load("resources/bg_map.png", "png")
+        self.backgroundMap = QGraphicsPixmapItem(QPixmap.fromImage(self.backgroundMapImg))
+        self.backgroundMap.hide()
 
-		self.backgroundMap = QGraphicsPixmapItem(QPixmap.fromImage(self.backgroundMapImg))
-		self.backgroundMap.hide()
-		self.scene.addItem(self.backgroundMap)
+        self.scene.addItem(self.backgroundMap)
 
-		# display individual countries as SVG elements
+        # display individual countries as SVG elements
 
-		self.renderer = QSvgRenderer()
-		self.renderer.load("resources/coloured_map.svg")
+        self.renderer.load("resources/coloured_map.svg")
 
-		self.countries = {}
-		with open("countries.json") as file:
-			countries = json.load(file) # need to add error checking
-			
-			for country in countries:
-				self.countries[country] = Country(self, country, countries[country])
-				self.scene.addItem(self.countries[country])
+        with open("countries.json") as file:
+            countries = json.load(file)
+            # TODO: need to add error checking for opening json file
 
-	def mousePressEvent(self, event):
-		if not(event.buttons() == Qt.RightButton or event.buttons() == Qt.MiddleButton):
-			return event.ignore()
+            for country in countries:
+                self.countries[country] = Country(self, country, countries[country])
 
-		self.initialMousePosition = event.pos()
+                # TODO: Should only occur when the bootstrapping "script" is run
 
-		self.initialSliderPosition["horizontal"] = self.horizontalScrollBar().value()
-		self.initialSliderPosition["vertical"] = self.verticalScrollBar().value()
+                # country added to the database
+                db.countries.add({
+                    "iso": countries[country]["iso"],
+                    "name": countries[country]["name"],
+                    "knoemaKey": countries[country]["datasetIdentifiers"]["knoemaKey"],
+                    "knoemaRegionId": countries[country]["datasetIdentifiers"]["knoemaRegionId"]
+                })
 
-	def mouseMoveEvent(self, event):
-		if not(event.buttons() == Qt.RightButton or event.buttons() == Qt.MiddleButton):
-			return event.ignore()
+                self.scene.addItem(self.countries[country])
 
-		self.isMouseMoving = True
+            # MAKESHIFT BOOTSTRAPPING CODE
+            # TODO: A button should trigger this instead and somewhere else
 
-		changeX = self.initialMousePosition.x() - event.x()
-		changeY = self.initialMousePosition.y() - event.y()
+            db.indicators.createIndicatorTypes()
+            db.countries.grabCountryData()
 
-		self.horizontalScrollBar().setValue(self.initialSliderPosition["horizontal"] + changeX)
-		self.verticalScrollBar().setValue(self.initialSliderPosition["vertical"] + changeY)
+    def mousePressEvent(self, event):
+        if not (event.buttons() == Qt.RightButton or event.buttons() == Qt.MiddleButton):
+            return event.ignore()
 
-	def mouseReleaseEvent(self, event):
-		if self.isMouseMoving:
-			self.isMouseMoving = False
-		else:
-			# check what country corresponds to colour
-			if event.button() == Qt.LeftButton:
-				# get the colour of the pixel on the background map image that is currently selected by the pointer
-				pixelColour = self.backgroundMapImg.pixelColor((
-					event.pos() +
-					QPoint(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-				) / self.currentScale)
+        self.initialMousePosition = event.pos()
 
-				# if a country is already selected, deselect it
-				if self.currentlySelected:
-					self.countries[self.currentlySelected].deselectCountry()
+        self.initialSliderPosition["horizontal"] = self.horizontalScrollBar().value()
+        self.initialSliderPosition["vertical"] = self.verticalScrollBar().value()
 
-				# linear search ???
-				for country in self.countries:
-					if self.countries[country].colour == pixelColour:
-						self.countries[country].selectCountry()
-						self.currentlySelected = country
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() == Qt.RightButton or event.buttons() == Qt.MiddleButton):
+            return event.ignore()
 
-						return self.findCountry(self.countries[country].name)
+        self.isMouseMoving = True
 
-				self.parent().countryInfo.hide()
+        changeX = self.initialMousePosition.x() - event.x()
+        changeY = self.initialMousePosition.y() - event.y()
 
-	def scaleMap(self, movement):
-		# zooming in and out of map
+        self.horizontalScrollBar().setValue(self.initialSliderPosition["horizontal"] + changeX)
+        self.verticalScrollBar().setValue(self.initialSliderPosition["vertical"] + changeY)
 
-		if movement == "in":
-			self.scale(1.25, 1.25)
-		elif movement == "out":
-			self.scale(0.75, 0.75)
+    def mouseReleaseEvent(self, event):
+        if self.isMouseMoving:
+            self.isMouseMoving = False
+        else:
+            # check what country corresponds to colour
+            if event.button() == Qt.LeftButton:
+                # get the colour of the pixel on the background map image that is currently selected by the pointer
+                pixelColour = self.backgroundMapImg.pixelColor((
+                                                                       event.pos() +
+                                                                       QPoint(self.horizontalScrollBar().value(),
+                                                                              self.verticalScrollBar().value())
+                                                               ) / self.currentScale)
 
-		# self.transform.m11() refers to the horizontal scale factor
-		# this is updated in order to ensure that mouse presses on countries are still detected when scale is changed
-		self.currentScale = self.transform().m11()
+                # if a country is already selected, deselect it
+                if self.currentlySelected:
+                    self.countries[self.currentlySelected].deselectCountry()
 
-	def wheelEvent(self, event):
-		movement = event.angleDelta().y()
+                # linear search ???
+                for country in self.countries:
+                    if self.countries[country].colour == pixelColour:
+                        self.countries[country].selectCountry()
+                        self.currentlySelected = country
 
-		if movement == 120:
-			self.scaleMap("in")
-		elif movement == -120:
-			self.scaleMap("out")
+                        return self.findCountry(self.countries[country].name)
 
-	def findCountry(self, country):		
-		text = QLabel()
-		text.setText(country)
+                self.parent().countryInfo.hide()
 
-		self.parent().showCountryDock(text)
-		
-		qDebug("Country clicked: " + country)
+    def scaleMap(self, movement):
+        # zooming in and out of map
+
+        if movement == "in":
+            self.scale(1.25, 1.25)
+        elif movement == "out":
+            self.scale(0.75, 0.75)
+
+        # self.transform.m11() refers to the horizontal scale factor
+        # this is updated in order to ensure that mouse presses on countries are still detected when scale is changed
+        self.currentScale = self.transform().m11()
+
+    def wheelEvent(self, event):
+        movement = event.angleDelta().y()
+
+        if movement == 120:
+            self.scaleMap("in")
+        elif movement == -120:
+            self.scaleMap("out")
+
+    def findCountry(self, country):
+        text = QLabel()
+        text.setText(country)
+
+        self.parent().showCountryDock(text)
+
+        qDebug("Country clicked: " + country)
 
 
 class Window(QMainWindow):
-	def __init__(self):
-		super(Window, self).__init__()
+    def __init__(self):
+        super(Window, self).__init__()
 
-		interactiveMap = InteractiveMap(self)
-		self.setCentralWidget(interactiveMap)
-		
-		self.countryInfo = QDockWidget("Country Information", self)
-		self.countryInfo.setFeatures(QDockWidget.DockWidgetClosable)
-		self.countryInfo.setFixedWidth(300)
-		self.countryInfo.hide()
+        interactiveMap = InteractiveMap(self)
+        self.setCentralWidget(interactiveMap)
 
-		self.addDockWidget(Qt.RightDockWidgetArea, self.countryInfo)
+        self.countryInfo = QDockWidget("Country Information", self)
+        self.countryInfo.setFeatures(QDockWidget.DockWidgetClosable)
+        self.countryInfo.setFixedWidth(300)
+        self.countryInfo.hide()
 
-		self.setWindowTitle("Project Fiscal")
+        self.addDockWidget(Qt.RightDockWidgetArea, self.countryInfo)
 
-	def showCountryDock(self, country):
-		if self.countryInfo.isHidden():
-			self.countryInfo.show()
-		self.countryInfo.setWidget(country)
+        self.setWindowTitle("Project Fiscal")
+
+    def showCountryDock(self, country):
+        if self.countryInfo.isHidden():
+            self.countryInfo.show()
+        self.countryInfo.setWidget(country)
 
 
 app = QApplication(sys.argv)

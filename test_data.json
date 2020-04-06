@@ -1,0 +1,148 @@
+{
+   "header":[
+      {
+         "dimensionId":"Time",
+         "filterText":null,
+         "members":[
+            "2019"
+         ],
+         "metadataFields":[
+
+         ]
+      }
+   ],
+   "stub":[
+      {
+         "dimensionId":"country",
+         "filterText":null,
+         "members":[
+            "United Kingdom",
+            "Ireland"
+         ],
+         "metadataFields":[
+
+         ]
+      },
+      {
+         "dimensionId":"subject",
+         "filterText":null,
+         "members":[
+            "Unemployment rate (Percent of total labor force)",
+            "Inflation, average consumer prices (Percent change)",
+            "Volume of exports of goods and services (Percent change)"
+         ],
+         "metadataFields":[
+
+         ]
+      }
+   ],
+   "filter":[
+
+   ],
+   "datasetName":"IMF: World Economic Outlook (WEO), October 2019",
+   "dataset":"IMFWEO2019Oct",
+   "keys":{
+      "header":[
+         {
+            "dimensionId":"Time",
+            "filterText":null,
+            "members":[
+               "2019"
+            ],
+            "metadataFields":[
+
+            ]
+         }
+      ],
+      "stub":[
+         {
+            "dimensionId":"country",
+            "filterText":null,
+            "members":[
+               "1001840",
+               "1000770"
+            ],
+            "metadataFields":[
+
+            ]
+         },
+         {
+            "dimensionId":"subject",
+            "filterText":null,
+            "members":[
+               "1000430",
+               "1000230",
+               "1000340"
+            ],
+            "metadataFields":[
+
+            ]
+         }
+      ],
+      "filter":[
+
+      ]
+   },
+   "data":[
+      {
+         "Time":"2019-01-01T00:00:00Z",
+         "subject":"Unemployment rate (Percent of total labor force)",
+         "country":"United Kingdom",
+         "RegionId":"GB",
+         "Frequency":"A",
+         "Value":3.814,
+         "Unit":"Percent of total labor force",
+         "Scale":1
+      },
+      {
+         "Time":"2019-01-01T00:00:00Z",
+         "subject":"Inflation, average consumer prices (Percent change)",
+         "country":"United Kingdom",
+         "RegionId":"GB",
+         "Frequency":"A",
+         "Value":1.808,
+         "Unit":"Percent change",
+         "Scale":1
+      },
+      {
+         "Time":"2019-01-01T00:00:00Z",
+         "subject":"Volume of exports of goods and services (Percent change)",
+         "country":"United Kingdom",
+         "RegionId":"GB",
+         "Frequency":"A",
+         "Value":0.425,
+         "Unit":"Percent change",
+         "Scale":1
+      },
+      {
+         "Time":"2019-01-01T00:00:00Z",
+         "subject":"Unemployment rate (Percent of total labor force)",
+         "country":"Ireland",
+         "RegionId":"IE",
+         "Frequency":"A",
+         "Value":5.472,
+         "Unit":"Percent of total labor force",
+         "Scale":1
+      },
+      {
+         "Time":"2019-01-01T00:00:00Z",
+         "subject":"Inflation, average consumer prices (Percent change)",
+         "country":"Ireland",
+         "RegionId":"IE",
+         "Frequency":"A",
+         "Value":1.197,
+         "Unit":"Percent change",
+         "Scale":1
+      },
+      {
+         "Time":"2019-01-01T00:00:00Z",
+         "subject":"Volume of exports of goods and services (Percent change)",
+         "country":"Ireland",
+         "RegionId":"IE",
+         "Frequency":"A",
+         "Value":4.569,
+         "Unit":"Percent change",
+         "Scale":1
+      }
+   ]
+}

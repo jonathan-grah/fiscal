@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="placeholder" uuid="f48092cd-e504-4a8e-8708-4f04b8016d16">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\thefl\Documents\Faster Programming\NEA\db\files\placeholder.db</jdbc-url>
+    </data-source>
+  </component>
+</project>

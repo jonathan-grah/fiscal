@@ -1,2 +1,2 @@
 ### Current requirements
-- `pip install SQLAlchemy`
+- `pip install -r requirements.txt`
