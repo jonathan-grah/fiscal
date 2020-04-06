@@ -5,21 +5,6 @@ import db.tables
 def createIndicatorTypes():
     print("Creating indicator types")
 
-    types = [
-        {
-            "knoemaKey": 1000430,
-            "property": "unemploymentRate"
-        },
-        {
-            "knoemaKey": 1000230,
-            "property": "inflationPercentChange"
-        },
-        {
-            "knoemaKey": 1000340,
-            "property": "exportsVolumePercentChange"
-        }
-    ]
-
     request = requests.get(f"http://knoema.com/api/1.0/meta/dataset/IMFWEO2019Oct/dimension/subject")
 
     if request.status_code == 403:

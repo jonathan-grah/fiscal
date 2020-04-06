@@ -118,14 +118,14 @@ class InteractiveMap(QGraphicsView):
 
         self.renderer.load("resources/coloured_map.svg")
 
+        # TODO: Should only occur when the bootstrapping "script" is run
+
         with open("countries.json") as file:
             countries = json.load(file)
             # TODO: need to add error checking for opening json file
 
             for country in countries:
                 self.countries[country] = Country(self, country, countries[country])
-
-                # TODO: Should only occur when the bootstrapping "script" is run
 
                 # country added to the database
                 db.countries.add({

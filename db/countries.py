@@ -51,10 +51,8 @@ def grabCountryData():
 
         # I am temporarily using a test json file, which is a mock response from the server (the server has rate
         # limiting so this is easier for dev)
-
         with open("test_data.json") as json_file:
             data = json.load(json_file)
-            # TODO: need to add error checking for opening json file
 
             countryMembers = data["keys"]["stub"][0]["members"]
             indicatorMembers = data["keys"]["stub"][1]["members"]
