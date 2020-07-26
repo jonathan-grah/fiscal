@@ -96,8 +96,8 @@ class InteractiveMap(QGraphicsView):
         self.scale(self.currentScale, self.currentScale)
 
         # scroll area of map is centered around Europe
-        self.horizontalScrollBar().setValue(4500)
-        self.verticalScrollBar().setValue(500)
+        self.horizontalScrollBar().setValue(1500)
+        self.verticalScrollBar().setValue(100)
 
     def displayMap(self):
         # TODO: modulate the gui.py file more
@@ -116,7 +116,7 @@ class InteractiveMap(QGraphicsView):
 
         # display individual countries as SVG elements
 
-        self.renderer.load("resources/coloured_map.svg")
+        self.renderer.load("resources/coloured_map_no_text.svg")
 
         # TODO: Should only occur when the bootstrapping "script" is run
 
@@ -140,8 +140,8 @@ class InteractiveMap(QGraphicsView):
             # MAKESHIFT BOOTSTRAPPING CODE
             # TODO: A button should trigger this instead and somewhere else
 
-            db.indicators.createIndicatorTypes()
-            db.countries.grabCountryData()
+            # db.indicators.createIndicatorTypes()
+            # db.countries.grabCountryData()
 
     def mousePressEvent(self, event):
         if not (event.buttons() == Qt.RightButton or event.buttons() == Qt.MiddleButton):
